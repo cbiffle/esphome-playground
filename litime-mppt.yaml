@@ -1,0 +1,65 @@
+substitutions:
+  mac_address: 00:11:22:33:44:55
+
+esphome:
+  name: litime-mppt
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [ litime_mppt_ble ]
+    refresh: always
+
+esp32:
+  board: seeed_xiao_esp32c6
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Litime-Mppt-Controller"
+    password: !secret fallback_wifi_password
+
+captive_portal:
+
+ble_client:
+  - mac_address: ${mac_address}
+
+litime_mppt_ble:
+  - online_status:
+      name: "MPPT Online"
+    panel_voltage:
+      name: "Solar Voltage"
+    battery_voltage:
+      name: "Battery Voltage (at MPPT)"
+    battery_current:
+      name: "MPPT Charge Current"
+    battery_power:
+      name: "MPPT Charge Power"
+    controller_temperature:
+      name: "MPPT Temperature"
+    energy_production_today:
+      name: "Total Energy Today"
+    energy_production_lifetime:
+      name: "Total Energy (Lifetime)"
+    peak_power_today:
+      name: "Peak Power Today"
+    days_running:
+      name: "Number Of Days Running"
