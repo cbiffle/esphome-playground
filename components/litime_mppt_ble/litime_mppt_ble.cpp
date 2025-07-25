@@ -91,9 +91,14 @@ void LiTimeMpptBle::assemble(const uint8_t *data, uint16_t length) {
             && this->frame_buffer_[1] == 0x03
             && this->frame_buffer_.size() == (3 + this->frame_buffer_[2] + 2)
     ) {
-        // TODO compute CRC here
-
         std::vector<uint8_t> frame_data(this->frame_buffer_.begin() + 3, this->frame_buffer_.end() - 2);
+        uint16_t computed_crc = crc16(&this->frame_buffer_[0], this->frame_buffer_.size() - 2);
+        uint16_t remote_crc = uint16_t(this->frame_buffer_[this->frame_buffer_.size() - 2]) | (uint16_t(this->frame_buffer_[this->frame_buffer_.size() - 1]) << 8);
+
+        if (computed_crc != remote_crc) {
+            ESP_LOGW(TAG, "[%s] bad CRC: got %x but computed %x", this->parent_->address_str().c_str(), remote_crc, computed_crc);
+            return;
+        }
         if (frame_data.size() == 0x13 * 2) {
             this->on_modbus_response(frame_data);
         } else {
