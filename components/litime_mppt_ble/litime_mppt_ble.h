@@ -7,7 +7,7 @@
 //#include "esphome/components/select/select.h"
 #include "esphome/components/sensor/sensor.h"
 //#include "esphome/components/switch/switch.h"
-//#include "esphome/components/text_sensor/text_sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 
 #ifdef USE_ESP32
 
@@ -67,6 +67,10 @@ class LiTimeMpptBle : public esphome::ble_client::BLEClientNode, public PollingC
             this->days_running_sensor_ = s;
         }
 
+        void set_mode_text_sensor(text_sensor::TextSensor *s) {
+            this->mode_sensor_ = s;
+        }
+
         void on_modbus_response(const std::vector<uint8_t> &data);
         void assemble(const uint8_t *data, uint16_t length);
 
@@ -86,12 +90,15 @@ class LiTimeMpptBle : public esphome::ble_client::BLEClientNode, public PollingC
         sensor::Sensor *peak_power_today_sensor_;
         sensor::Sensor *days_running_sensor_;
 
+        text_sensor::TextSensor *mode_sensor_;
+
         std::vector<uint8_t> frame_buffer_;
         uint16_t char_handle_;
         uint8_t no_response_count_{0};
 
         void publish_state_(binary_sensor::BinarySensor *binary_sensor, const bool &state);
         void publish_state_(sensor::Sensor *sensor, float value);
+        void publish_state_(text_sensor::TextSensor *sensor, std::string const &);
         void publish_device_unavailable_();
         void track_online_status_();
         void reset_online_status_tracker_();

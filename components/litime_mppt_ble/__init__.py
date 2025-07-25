@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import ble_client, binary_sensor, sensor
+from esphome.components import ble_client, binary_sensor, sensor, text_sensor
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_CONNECTIVITY,
@@ -22,7 +22,7 @@ from esphome.const import (
 )
 
 DEPENDENCIES = ["ble_client"]
-AUTO_LOAD = ["sensor", "binary_sensor"]
+AUTO_LOAD = ["sensor", "binary_sensor", "text_sensor"]
 
 litime_mppt_ble_ns = cg.esphome_ns.namespace("litime_mppt_ble")
 LiTimeMpptBle = litime_mppt_ble_ns.class_(
@@ -71,6 +71,12 @@ SENSOR_NAMES = [
     CONF_PEAK_POWER_TODAY,
     CONF_DAYS_RUNNING,
 ]
+
+CONF_MODE = "mode"
+TEXT_SENSOR_NAMES = [
+    CONF_MODE,
+]
+
 
 CONFIG_SCHEMA = (
     cv.Schema(
@@ -160,6 +166,8 @@ CONFIG_SCHEMA = (
                 device_class = DEVICE_CLASS_CONNECTIVITY,
                 entity_category = ENTITY_CATEGORY_DIAGNOSTIC,
             ),
+
+            cv.Optional(CONF_MODE): text_sensor.text_sensor_schema(),
         }
     )
     .extend(ble_client.BLE_CLIENT_SCHEMA)
@@ -181,6 +189,11 @@ async def to_code(config):
         if conf := config.get(name):
             sens = await sensor.new_sensor(conf)
             cg.add(getattr(var, f"set_{name}_sensor")(sens))
+
+    for name in TEXT_SENSOR_NAMES:
+        if conf := config.get(name):
+            sens = await text_sensor.new_text_sensor(conf)
+            cg.add(getattr(var, f"set_{name}_text_sensor")(sens))
 
     #if CONF_MODE in config:
     #    sens = await text_sensor.new_text_sensor(config[CONF_MODE])

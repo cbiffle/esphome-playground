@@ -144,6 +144,11 @@ float bef16(std::vector<uint8_t> const &data, size_t index, float unit) {
     return (((uint16_t)data[offset] << 8) | data[offset + 1]) * unit;
 }
 
+uint16_t beu16(std::vector<uint8_t> const &data, size_t index) {
+    size_t offset = index * 2;
+    return (((uint16_t)data[offset] << 8) | data[offset + 1]);
+}
+
 void LiTimeMpptBle::on_modbus_response(std::vector<uint8_t> const &data) {
     this->reset_online_status_tracker_();
 
@@ -161,10 +166,45 @@ void LiTimeMpptBle::on_modbus_response(std::vector<uint8_t> const &data) {
     this->publish_state_(this->peak_power_today_sensor_, bef16(data, 9, 1));
     this->publish_state_(this->energy_production_today_sensor_, bef16(data, 10, 1));
     // 11: not used, controller mode related?
-    // 12: mode in my Rust client
+    ESP_LOGD(TAG, "message[11] is: %x", beu16(data, 11));
+    // 12: mode
+    char const *mode = "UNKNOWN";
+    switch (beu16(data, 12)) {
+        case 0: {
+            mode = "OFF";
+            break;
+        }
+        case 1: {
+            mode = "ON";
+            break;
+        }
+        case 2: {
+            mode = "MPPT";
+            break;
+        }
+        case 3: {
+            mode = "EQUALIZING";
+            break;
+        }
+        case 4: {
+            mode = "BOOST";
+            break;
+        }
+        case 5: {
+            mode = "FLOAT";
+            break;
+        }
+        case 6: {
+            mode = "OVERCURRENT";
+            break;
+        }
+    }
+    this->publish_state_(this->mode_sensor_, mode);
     // 13: not understood
+    ESP_LOGD(TAG, "message[13] is: %x", beu16(data, 13));
     this->publish_state_(this->days_running_sensor_, bef16(data, 14, 1));
     // 15: not understood
+    ESP_LOGD(TAG, "message[15] is: %x", beu16(data, 13));
     this->publish_state_(this->energy_production_lifetime_sensor_, bef16(data, 16, 1));
 }
 
@@ -215,14 +255,13 @@ void LiTimeMpptBle::publish_state_(switch_::Switch *obj, const bool &state) {
 
   obj->publish_state(state);
 }
+*/
 
 void LiTimeMpptBle::publish_state_(text_sensor::TextSensor *text_sensor, const std::string &state) {
-  if (text_sensor == nullptr)
-    return;
-
-  text_sensor->publish_state(state);
+    if (text_sensor) {
+        text_sensor->publish_state(state);
+    }
 }
-*/
 
 }  // namespace litime_mppt_ble
 }  // namespace esphome
