@@ -157,7 +157,7 @@ CONFIG_SCHEMA = (
             ),
 
             cv.Optional(CONF_DAYS_RUNNING): sensor.sensor_schema(
-                unit_of_measurement = UNIT_EMPTY,
+                unit_of_measurement = "d",
                 accuracy_decimals = 0,
                 device_class = DEVICE_CLASS_DURATION,
                 state_class = STATE_CLASS_TOTAL_INCREASING,
