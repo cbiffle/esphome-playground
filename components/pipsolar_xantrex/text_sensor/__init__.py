@@ -7,6 +7,7 @@ from .. import CONF_PIPSOLAR_ID, PIPSOLAR_COMPONENT_SCHEMA
 DEPENDENCIES = ["uart"]
 
 CONF_DEVICE_MODE = "device_mode"
+CONF_MODE = "mode"
 CONF_LAST_QPIGS = "last_qpigs"
 CONF_LAST_QPIRI = "last_qpiri"
 CONF_LAST_QMOD = "last_qmod"
@@ -17,6 +18,7 @@ CONF_LAST_QMN = "last_qmn"
 
 TYPES = [
     CONF_DEVICE_MODE,
+    CONF_MODE,
     CONF_LAST_QPIGS,
     CONF_LAST_QPIRI,
     CONF_LAST_QMOD,

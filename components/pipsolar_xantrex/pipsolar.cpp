@@ -273,6 +273,30 @@ void Pipsolar::loop() {
           mode = value_device_mode_;
           this->device_mode_->publish_state(mode);
         }
+        if (this->mode_) {
+          char const *mode_str = "UNKNOWN";
+          switch (value_device_mode_) {
+            case 'S':
+              mode_str = "Standby";
+              break;
+            case 'P':
+              mode_str = "PowerOn";
+              break;
+            case 'B':
+              mode_str = "OnBattery";
+              break;
+            case 'L':
+              mode_str = "OnLine";
+              break;
+            case 'F':
+              mode_str = "Fault";
+              break;
+            case 'H':
+              mode_str = "PowerSave";
+              break;
+          }
+          this->mode_->publish_state(mode_str);
+        }
         this->state_ = STATE_IDLE;
         break;
       case POLLING_QFLAG:
