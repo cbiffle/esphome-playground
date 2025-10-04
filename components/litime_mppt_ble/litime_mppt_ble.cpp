@@ -174,6 +174,7 @@ void LiTimeMpptBle::on_modbus_response(std::vector<uint8_t> const &data) {
     ESP_LOGD(TAG, "message[11] is: %x", beu16(data, 11));
     // 12: mode
     char const *mode = "UNKNOWN";
+    ESP_LOGD(TAG, "raw mode is: %x", beu16(data, 12));
     switch (beu16(data, 12)) {
         case 0: {
             mode = "OFF";
