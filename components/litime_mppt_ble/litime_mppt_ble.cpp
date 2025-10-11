@@ -157,9 +157,14 @@ uint16_t beu16(std::vector<uint8_t> const &data, size_t index) {
 void LiTimeMpptBle::on_modbus_response(std::vector<uint8_t> const &data) {
     this->reset_online_status_tracker_();
 
-    this->publish_state_(this->battery_voltage_sensor_, bef16(data, 1, 0.1f));
-    this->publish_state_(this->battery_current_sensor_, bef16(data, 2, 0.01f));
+    float sample_v = bef16(data, 1, 0.1f);
+    float sample_i = bef16(data, 2, 0.01f);
+    this->publish_state_(this->battery_voltage_sensor_, sample_v);
+    this->publish_state_(this->battery_current_sensor_, sample_i);
+
+    float derived_p = sample_v * sample_i;
     this->publish_state_(this->battery_power_sensor_, bef16(data, 3, 1));
+    this->publish_state_(this->battery_computed_power_sensor_, derived_p);
 
     // Register 4 contains two packed 8-bit temperatures, we want the higher
     // (first) - the lower (second) appears to be external battery temperature

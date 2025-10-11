@@ -48,6 +48,7 @@ CONF_PANEL_VOLTAGE = "panel_voltage"
 CONF_BATTERY_VOLTAGE = "battery_voltage"
 CONF_BATTERY_CURRENT = "battery_current"
 CONF_BATTERY_POWER = "battery_power"
+CONF_BATTERY_COMPUTED_POWER = "battery_computed_power"
 CONF_LOAD_VOLTAGE = "load_voltage"
 CONF_LOAD_CURRENT = "load_current"
 CONF_LOAD_POWER = "load_power"
@@ -56,12 +57,14 @@ CONF_ENERGY_DAY = "energy_production_today"
 CONF_ENERGY = "energy_production_lifetime"
 CONF_PEAK_POWER_TODAY = "peak_power_today"
 CONF_DAYS_RUNNING = "days_running"
+CONF_RAW_MODE = "raw_mode"
 
 SENSOR_NAMES = [
     CONF_PANEL_VOLTAGE,
     CONF_BATTERY_VOLTAGE,
     CONF_BATTERY_CURRENT,
     CONF_BATTERY_POWER,
+    CONF_BATTERY_COMPUTED_POWER,
     CONF_LOAD_VOLTAGE,
     CONF_LOAD_CURRENT,
     CONF_LOAD_POWER,
@@ -98,6 +101,12 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_BATTERY_POWER): sensor.sensor_schema(
                 unit_of_measurement = UNIT_WATT,
                 accuracy_decimals = 0,
+                device_class = DEVICE_CLASS_POWER,
+                state_class = STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_BATTERY_COMPUTED_POWER): sensor.sensor_schema(
+                unit_of_measurement = UNIT_WATT,
+                accuracy_decimals = 2,
                 device_class = DEVICE_CLASS_POWER,
                 state_class = STATE_CLASS_MEASUREMENT,
             ),
@@ -194,8 +203,3 @@ async def to_code(config):
         if conf := config.get(name):
             sens = await text_sensor.new_text_sensor(conf)
             cg.add(getattr(var, f"set_{name}_text_sensor")(sens))
-
-    #if CONF_MODE in config:
-    #    sens = await text_sensor.new_text_sensor(config[CONF_MODE])
-    #    fcg.add(var.set_mode(sens))
-

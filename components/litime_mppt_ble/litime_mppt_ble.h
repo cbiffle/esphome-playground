@@ -42,6 +42,9 @@ class LiTimeMpptBle : public esphome::ble_client::BLEClientNode, public PollingC
         void set_battery_power_sensor(sensor::Sensor *s) {
             this->battery_power_sensor_ = s;
         }
+        void set_battery_computed_power_sensor(sensor::Sensor *s) {
+            this->battery_computed_power_sensor_ = s;
+        }
         void set_load_voltage_sensor(sensor::Sensor *s) {
             this->load_voltage_sensor_ = s;
         }
@@ -81,6 +84,7 @@ class LiTimeMpptBle : public esphome::ble_client::BLEClientNode, public PollingC
         sensor::Sensor *battery_voltage_sensor_;
         sensor::Sensor *battery_current_sensor_;
         sensor::Sensor *battery_power_sensor_;
+        sensor::Sensor *battery_computed_power_sensor_;
         sensor::Sensor *load_voltage_sensor_;
         sensor::Sensor *load_current_sensor_;
         sensor::Sensor *load_power_sensor_;
